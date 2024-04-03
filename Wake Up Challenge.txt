@@ -1,0 +1,86 @@
+Here's a basic network sweeper script using bash and ping:
+
+#!/bin/bash
+
+# Get the network address (e.g., 192.168.1)
+network_address=${1}
+
+# Check if network address is provided
+if [ -z "$network_address" ]; then
+  echo "Usage: $0 network_address"
+  echo "Example: $0 192.168.1"
+  exit 1
+fi
+
+# Loop through possible hosts (assuming /24 subnet)
+for i in {1..254}; do
+  # Build the IP address
+  ip_address="$network_address.$i"
+
+  # Ping the host with one count ( -c 1 )
+  ping -c 1 -q "$ip_address" &> /dev/null
+
+  # Check if ping was successful (exit code 0)
+  if [ $? -eq 0 ]; then
+    echo "Node with IP: $ip_address is up"
+  fi
+done
+
+Explanation:
+
+Shebang (#!): Specifies the interpreter for the script (bash in this case).
+Network Address: The script takes the network address (e.g., 192.168.1) as the first argument.
+Error Checking: Checks if the network address is provided. If not, it displays usage information and exits.
+Looping: Iterates through possible IP addresses (1 to 254) assuming a /24 subnet.
+Building IP: Constructs the full IP address by combining the network address and the loop counter (i).
+Pinging: Uses ping with -c 1 (one count) and -q (quiet) options to silently ping the IP and redirect output/error to /dev/null.
+Checking Response: Checks the exit code of the ping command. If it's 0 (success), the host is considered alive.
+Output: If the ping is successful, it prints a message indicating the live IP address.
+How to Use:
+
+Save the script as a file (e.g., network_scanner.sh).
+Make the script executable: chmod +x network_scanner.sh
+Run the script with your network address: ./network_scanner.sh 192.168.1
+Note:
+
+This script scans a whole /24 subnet by default. You might want to modify the loop range for a specific network segment.
+This is a basic example. You can enhance it further by adding features like:
+Specifying the subnet mask
+Saving live IPs to a file
+Handling errors (e.g., unreachable network)
+
+Here's the Python version of the network sweeper script:
+Python
+import subprocess
+
+def ping_sweep(network_address):
+    """Scans a network for live hosts using ping."""
+    for i in range(1, 255):
+        ip_address = f"{network_address}.{i}"
+        result = subprocess.run(["ping", "-c", "1", "-q", ip_address],
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL)
+        if result.returncode == 0:
+            print(f"Node with IP: {ip_address} is up")
+
+if __name__ == "__main__":
+    network_address = input("Enter network address (e.g., 192.168.1): ")
+    ping_sweep(network_address)
+    Explanation:
+
+Import: Imports the subprocess module for executing external commands.
+ping_sweep Function:
+Takes the network address as input.
+Iterates through potential IP addresses (1 to 254).
+Constructs the full IP address using string formatting.
+Uses subprocess.run to execute the ping command, sending a single ping (-c 1) in quiet mode (-q), and suppressing output/error.
+Checks the return code of the ping process: 0 indicates success.
+If successful, prints a message indicating the live IP address.
+Main Execution:
+Prompts the user to enter the network address.
+Calls the ping_sweep function to perform the scan.
+How to Use:
+
+Save the script as a Python file (e.g., network_sweeper.py).
+Run the script: python network_sweeper.py
+Enter the network address when prompted.
